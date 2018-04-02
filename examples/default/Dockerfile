@@ -4,4 +4,6 @@ FROM kyma/docker-nginx
 COPY /dist/webpack-4 /var/www
 
 # config env variables and spin up nginx proxy-server
-CMD /var/www/config-env.sh /var/www/index.html.template /var/www/index.html && nginx
+CMD cd /var/www && \
+  ./config-env.sh index.html.template index.html && \
+  nginx
