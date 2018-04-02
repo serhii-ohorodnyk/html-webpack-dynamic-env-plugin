@@ -34,7 +34,7 @@ plugins: [
   })
 ]  
 ```
-This will generate index.html file from HtmlWebpackPlugin with injected script tag that defines your environment defaults. It should looks something like this:
+This will generate index.html file from HtmlWebpackPlugin with injected script tag that defines your environment defaults. It should look something like this:
 ```javascript
 window.CLIENT_ENV = { YOUR_ENV_VARIABLE: "default-value-here", ANOTHER_ENV_VAR: "" }
 ```
@@ -46,6 +46,7 @@ YOUR_ENV_VARIABLE=newvalue ./config-env.sh index.html.template index.html
 Configuration
 -------------
 List of available configuration options:
+
 |Name|Type|Default|Description|
 |:--:|:--:|:-----:|:----------|
 |**`envVars`**|`{ [key: string]: string | undefined }`|``|Key-value map of environment variables. Values will be used as defaults in generated html output file|
