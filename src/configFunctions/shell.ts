@@ -1,10 +1,13 @@
 import { reduce, pipe, toPairs } from "ramda"
 import { Options } from "../options"
 
+const escapeDelimiter = (text) =>
+  !!text ? text.replace(/[|"]/g, "\\$&") : ""
+
 const envsToScriptReplacements = pipe<Options["envVars"], Array<(string | undefined)[]>, string>(
   toPairs,
   reduce<(string | undefined)[], string>(
-    (acc, value) => `${acc}s/%${value[0]}%/"'\${${value[0]}-${value[1]}}'"/g;`,
+    (acc, value) => `${acc}s|%${value[0]}%|"'\${${value[0]}-"${escapeDelimiter(value[1])}"}'"|g;`,
     ""
   )
 )
