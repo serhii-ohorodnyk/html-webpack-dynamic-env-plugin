@@ -1,0 +1,11 @@
+version: '3'
+
+services:
+  dynenv-plugin-example:
+    build: .
+    ports:
+      - "5001:80"
+    restart: always
+    environment:
+      - API_ENDPOINT=https://another-endpoint.com
+      - FEATURE_FLAG=false
