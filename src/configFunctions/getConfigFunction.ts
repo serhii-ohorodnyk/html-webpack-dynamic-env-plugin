@@ -5,10 +5,6 @@ export default (configFactoryFunc: "shell" | typeof shell) => {
     case "shell":
       return shell
     default:
-    if (typeof configFactoryFunc === "function") {
       return configFactoryFunc
-    } else {
-      throw "'configFactoryFunc' should be either predefined function factory or a custom function!"
-    }
   }
 }

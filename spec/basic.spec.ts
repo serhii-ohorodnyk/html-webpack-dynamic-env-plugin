@@ -58,14 +58,13 @@ const testPlugin = ({
 
       forEach(expectedResult => {
         if (typeof expectedResult === "string") {
-          expect(existsSync(join(OUTPUT_DIR, expectedResult))).toBe(true)    
+          expect(existsSync(join(OUTPUT_DIR, expectedResult))).toBe(true)
         } else {
           const checkContent = checkContentInFile(join(OUTPUT_DIR, expectedResult.filename))
           forEach(checkContent, expectedResult.rules)
         }
       }, expectedResults)
     }
-
     done()
   })
 }
@@ -121,11 +120,11 @@ describe("HtmlWebpackDynamicEnvPlugin", () => {
           envVars: { ENV_VAR: "env-var-value" }
         })
       ]
-    }, 
-    expectedResults: [{ 
-      filename: defaultOptions.configFileName, 
+    },
+    expectedResults: [{
+      filename: defaultOptions.configFileName,
       rules: [getConfigFunction(defaultOptions.configFactoryFunc)({ ENV_VAR: "env-var-value" })]
-    }, { 
+    }, {
       filename: "index.html",
       rules: [defaultOptions.windowKeyName, "ENV_VAR", "env-var-value"]
     }, {
@@ -133,7 +132,7 @@ describe("HtmlWebpackDynamicEnvPlugin", () => {
       rules: [defaultOptions.windowKeyName, toPlaceholder("ENV_VAR")]
     }]
   }))
-  
+
   it("allows you to specify custom 'configFileName' with subfolders", testPlugin({
     config: {
       ...baseConfig,
@@ -149,14 +148,14 @@ describe("HtmlWebpackDynamicEnvPlugin", () => {
       "subfolder/custom-config-name.sh"
     ]
   }))
-  
+
   it("allows you to specify custom 'windowKeyName'", testPlugin({
     config: {
       ...baseConfig,
       plugins: [
         new HtmlWebpackPlugin(),
         new HtmlWebpackDynamicEnvPlugin({
-          envVars: { ENV_VAR: "envVarValue"},
+          envVars: { ENV_VAR: "envVarValue" },
           windowKeyName: "differentWindowKey"
         })
       ]
@@ -192,7 +191,7 @@ describe("HtmlWebpackDynamicEnvPlugin", () => {
       plugins: [
         new HtmlWebpackPlugin(),
         new HtmlWebpackDynamicEnvPlugin({
-          envVars: { LOREM: "ipsum"},
+          envVars: { LOREM: "ipsum" },
           configFactoryFunc: envs => `custom-config-template ${JSON.stringify(envs)}`
         })
       ]
@@ -203,27 +202,134 @@ describe("HtmlWebpackDynamicEnvPlugin", () => {
     }]
   }))
 
-  it("should throw an exception when unsupported 'configFactoryFunc' is provided", testPlugin({
+  it("should throw when unsupported 'configFactoryFunc' is provided", () => {
+    expect(() => new HtmlWebpackDynamicEnvPlugin({
+      envVars: { a: 'a' },
+      configFactoryFunc: "a"
+    } as any)).toThrow()
+    expect(() => new HtmlWebpackDynamicEnvPlugin({
+      envVars: { a: 'a' },
+      configFactoryFunc: undefined
+    } as any)).toThrow()
+    expect(() => new HtmlWebpackDynamicEnvPlugin({
+      envVars: { a: 'a' },
+      configFactoryFunc: null
+    } as any)).toThrow()
+    expect(() => new HtmlWebpackDynamicEnvPlugin({
+      envVars: { a: 'a' },
+      configFactoryFunc: { a: 'a' }
+    } as any)).toThrow()
+  })
+
+  it("allows you to specify custom 'templateFileNames' with subfolders", testPlugin({
     config: {
       ...baseConfig,
       plugins: [
         new HtmlWebpackPlugin(),
         new HtmlWebpackDynamicEnvPlugin({
-          envVars: { LOREM: "ipsum"},
-          configFactoryFunc: "unsupportedType"
-        } as any)
+          envVars: { LOREM: "ipsum" },
+          templateFileNames: {
+            "index.html": "subfolder/template.index"
+          }
+        })
       ]
     },
-    expectedResults: [],
-    expectBundleErrors: true
+    expectedResults: [
+      "subfolder/template.index"
+    ]
   }))
 
-  it("allows you to specify custom 'templateFileNames' with subfolders")
+  it("allow you to specify custom 'templateFileNames' when HtmlWebpackPlugin has multiple html entries", testPlugin({
+    config: {
+      ...baseConfig,
+      plugins: [
+        new HtmlWebpackPlugin(),
+        new HtmlWebpackPlugin({
+          filename: "second-index.html"
+        }),
+        new HtmlWebpackDynamicEnvPlugin({
+          envVars: { LOREM: "ipsum" },
+          templateFileNames: {
+            "index.html": "subfolder/template.index",
+            "second-index.html": "subfolder/template2.index"
+          }
+        })
+      ]
+    },
+    expectedResults: [
+      "subfolder/template.index",
+      "subfolder/template2.index"
+    ]
+  }))
 
-  it("generates templates for every html with multi-entry setup in HtmlWebpackPlugin")
-  it("generates one script file with multi-entry setup in HtmlWebpackPlugin")
-  it("allow you to specify custom 'templateFileNames' when HtmlWebpackPlugin has multiple html entries")
-  it("does not work without HtmlWebpackPlugin")
-  it("does not work if plugin specified before HtmlWebpackPlugin")
-  it("throws an exception when 'envVars' are not specified")
+  it("generates default templates for every html with multi-entry setup in HtmlWebpackPlugin", testPlugin({
+    config: {
+      ...baseConfig,
+      plugins: [
+        new HtmlWebpackPlugin(),
+        new HtmlWebpackPlugin({
+          filename: "second-index.html"
+        }),
+        new HtmlWebpackDynamicEnvPlugin({
+          envVars: { LOREM: "ipsum" }
+        })
+      ]
+    },
+    expectedResults: [
+      "index.html.template",
+      "second-index.html.template"
+    ]
+  }))
+
+  it("generates one script file with multi-entry setup in HtmlWebpackPlugin", testPlugin({
+    config: {
+      ...baseConfig,
+      plugins: [
+        new HtmlWebpackPlugin(),
+        new HtmlWebpackPlugin({
+          filename: "second-index.html"
+        }),
+        new HtmlWebpackDynamicEnvPlugin({
+          envVars: { LOREM: "ipsum" }
+        })
+      ]
+    },
+    expectedResults: [
+      "config-env.sh"
+    ]
+  }))
+
+  it("does not work without HtmlWebpackPlugin", testPlugin({
+    config: {
+      ...baseConfig,
+      plugins: [
+        new HtmlWebpackDynamicEnvPlugin({
+          envVars: { LOREM: "ipsum" }
+        })
+      ]
+    },
+    expectCompilationErrors: true,
+    expectedResults: []
+  }))
+
+  it("does not work if plugin specified before HtmlWebpackPlugin", testPlugin({
+    config: {
+      ...baseConfig,
+      plugins: [
+        new HtmlWebpackDynamicEnvPlugin({
+          envVars: { LOREM: "ipsum" }
+        }),
+        new HtmlWebpackPlugin()
+      ]
+    },
+    expectCompilationErrors: true,
+    expectedResults: []
+  }))
+
+  it("throws an exception when 'envVars' are not specified", () => {
+    expect(() => new HtmlWebpackDynamicEnvPlugin(undefined as any)).toThrow()
+    expect(() => new HtmlWebpackDynamicEnvPlugin(null as any)).toThrow()
+    expect(() => new HtmlWebpackDynamicEnvPlugin({} as any)).toThrow()
+    expect(() => new HtmlWebpackDynamicEnvPlugin({ configFileName: 'foo' } as any)).toThrow()
+  })
 })
