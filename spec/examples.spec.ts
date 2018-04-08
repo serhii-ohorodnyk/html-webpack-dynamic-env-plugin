@@ -12,14 +12,17 @@ const OUTPUT_DIR = join(
   `webpack-${webpackMajorVersion}`
 )
 
-const runExample = (exampleName: string) => (done: jest.DoneCallback) => {
+type DoneCallback = () => void
+
+const runExample = (exampleName: string) => (done: DoneCallback) => {
   const examplePath = resolve(__dirname, "..", "examples", exampleName)
   const exampleOutput = join(OUTPUT_DIR, exampleName)
   const fixturePath = join(examplePath, "dist", "webpack-" + webpackMajorVersion)
 
   const config = require(join(examplePath, "webpack.config.ts"))
-  config.context = examplePath
-  config.output.path = exampleOutput
+  console.log(JSON.stringify(config))
+  // config.context = examplePath
+  // config.output.path = exampleOutput
 
   if (Number(webpackMajorVersion) >= 4) {
     config.plugins = [
@@ -34,7 +37,13 @@ const runExample = (exampleName: string) => (done: jest.DoneCallback) => {
     config.optimization = { minimizer: [] }
   }
 
-  webpack(config, err => {
+  webpack(config, (err, stats) => {
+    expect(err).toBeFalsy()
+    const compilationErrors = ((stats as any).compilation.errors || []).join("\n")
+    expect(compilationErrors).toBe("")
+    const compilationWarnings = ((stats as any).compilation.warnings || []).join("\n")
+    expect(compilationWarnings).toBe("")
+
     const dirCompare = require("dir-compare")
     const res = dirCompare.compareSync(fixturePath, exampleOutput, { compareSize: true })
     res.diffSet.filter((diff) => diff.state === "distinct")
@@ -54,4 +63,5 @@ describe("HtmlWebpackDynamicEnvPlugin examples", () => {
   beforeAll(() =>  rimraf.sync(OUTPUT_DIR))
   
   it("default example", runExample("default"))
+  it("customized example", runExample("customized"))
 })

@@ -1,5 +1,5 @@
-/dist-tests
-/examples
-/spec
-/src
-/tsconfig.json
+dist-tests/
+examples/
+spec/
+src/
+tsconfig.json
