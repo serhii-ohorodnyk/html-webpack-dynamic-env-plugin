@@ -1,7 +1,7 @@
 {
   "name": "html-webpack-dynamic-env-plugin",
   "license": "MIT",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Extension plugin for html-webpack-plugin that allows specifying dynamic environment for static html apps",
   "bugs": "https://github.com/serhii-ohorodnyk/html-webpack-dynamic-env-plugin/issues",
   "homepage": "https://github.com/serhii-ohorodnyk/html-webpack-dynamic-env-plugin",
