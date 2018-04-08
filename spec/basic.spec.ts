@@ -31,6 +31,7 @@ interface TestPluginData {
   expectCompilationErrors?: boolean
   expectCompilationWarnings?: boolean
 }
+type DoneCallback = () => void
 
 const testPlugin = ({
   config,
@@ -38,7 +39,7 @@ const testPlugin = ({
   expectBundleErrors = false,
   expectCompilationErrors = false,
   expectCompilationWarnings = false
-}: TestPluginData) => (done: jest.DoneCallback) => {
+}: TestPluginData) => (done: DoneCallback) => {
 
   if (webpackMajorVersion >= 4) {
     config.mode = "development"
@@ -117,19 +118,22 @@ describe("HtmlWebpackDynamicEnvPlugin", () => {
       plugins: [
         new HtmlWebpackPlugin(),
         new HtmlWebpackDynamicEnvPlugin({
-          envVars: { ENV_VAR: "env-var-value" }
+          envVars: {
+            ENV_VAR: "env-var-value",
+            API_ENDPOINT: "https://api.github.com"
+          }
         })
       ]
     },
     expectedResults: [{
       filename: defaultOptions.configFileName,
-      rules: [getConfigFunction(defaultOptions.configFactoryFunc)({ ENV_VAR: "env-var-value" })]
+      rules: [getConfigFunction(defaultOptions.configFactoryFunc)({ ENV_VAR: "env-var-value", API_ENDPOINT: "https://api.github.com" })]
     }, {
       filename: "index.html",
-      rules: [defaultOptions.windowKeyName, "ENV_VAR", "env-var-value"]
+      rules: [defaultOptions.windowKeyName, "ENV_VAR", "env-var-value", "API_ENDPOINT", "https://api.github.com"]
     }, {
       filename: "index.html.template",
-      rules: [defaultOptions.windowKeyName, toPlaceholder("ENV_VAR")]
+      rules: [defaultOptions.windowKeyName, toPlaceholder("ENV_VAR"), toPlaceholder("API_ENDPOINT")]
     }]
   }))
 

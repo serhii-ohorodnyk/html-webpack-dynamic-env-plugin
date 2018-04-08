@@ -69,13 +69,16 @@ class HtmlWebpackDynamicEnvPlugin {
       rawEnvToScriptTag(envsToPlaceholderValues(this.options.envVars), this.options.windowKeyName)
 
     this.templates = this.templates || {}
-    this.templates[htmlPluginData.outputName] =
-      this.options.injectEnvVars(htmlPluginData.html, templateOptions)
+    this.templates[htmlPluginData.outputName] = this.options.injectEnvVars(
+      htmlPluginData.html,
+      templateOptions,
+      this.options.templateFileNames[htmlPluginData.outputName] || `${htmlPluginData.outputName}.template`
+    )
 
     const defaultOptions =
       rawEnvToScriptTag(envsToStringDefaultValues(this.options.envVars), this.options.windowKeyName)
 
-    htmlPluginData.html = this.options.injectEnvVars(htmlPluginData.html, defaultOptions)
+    htmlPluginData.html = this.options.injectEnvVars(htmlPluginData.html, defaultOptions, htmlPluginData.outputName)
 
     callback(null, htmlPluginData)
   }

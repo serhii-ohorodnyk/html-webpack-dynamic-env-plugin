@@ -3,3 +3,7 @@ declare namespace jasmine {
     diffPatch: (to: string) => boolean
   }
 }
+
+declare var jest: {
+  setTimeout: (number) => void
+}

@@ -17,8 +17,9 @@ export interface Options {
 
   /**
    * Variables injection function.
-   * @param oldHtml - string representation of current html
-   * @param rawVariables - string representation of variables to inject
+   * @param {string} oldHtml - string representation of current html
+   * @param {string} rawVariables - string representation of variables to inject
+   * @param {string} filename - filename where injection is done
    * @returns - html with injected variables
    * Optional.
    * Default: appends to 'head' tag
@@ -32,12 +33,12 @@ export interface Options {
    */
   configFileName?: string
 
-  /**
+  /** 
    * Configuration script factory function.
    * Can be either pre-defined type, e.g. 'shell'
    * or a custom function-factory with following type:
-   * @param envs - @type of "envVars".
-   * @returns - String. Content of the script file
+   * @param {typeof envVars} envs
+   * @returns {string} - content of the script file
    * Optional.
    * Default: "shell"
    */
