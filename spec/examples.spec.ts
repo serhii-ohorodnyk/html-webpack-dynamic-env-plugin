@@ -20,9 +20,8 @@ const runExample = (exampleName: string) => (done: DoneCallback) => {
   const fixturePath = join(examplePath, "dist", "webpack-" + webpackMajorVersion)
 
   const config = require(join(examplePath, "webpack.config.ts"))
-  console.log(JSON.stringify(config))
-  // config.context = examplePath
-  // config.output.path = exampleOutput
+  config.context = examplePath
+  config.output.path = exampleOutput
 
   if (Number(webpackMajorVersion) >= 4) {
     config.plugins = [
