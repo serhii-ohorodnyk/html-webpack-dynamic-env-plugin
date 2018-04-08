@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/serhii-ohorodnyk/html-webpack-dynamic-env-plugin.svg?branch=master)](https://travis-ci.org/serhii-ohorodnyk/html-webpack-dynamic-env-plugin)
+
 HTML Webpack Dynamic Env Plugin
 =================================
 This is an extension plugin for the [webpack](http://webpack.github.io/) plugin [html-webpack-plugin](https://github.com/jantimon/html-webpack-plugin) that allows configure environment variables for static html app after build step and before deployment (e.g. push to cdn or docker run)
