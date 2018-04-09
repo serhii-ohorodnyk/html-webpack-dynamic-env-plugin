@@ -120,20 +120,41 @@ describe("HtmlWebpackDynamicEnvPlugin", () => {
         new HtmlWebpackDynamicEnvPlugin({
           envVars: {
             ENV_VAR: "env-var-value",
-            API_ENDPOINT: "https://api.github.com"
-          }
+            API_ENDPOINT: "https://api.github.com",
+            FEATURE_FLAG: false,
+            NUMBER: 123
+          } as { [key: string]: any }
         })
       ]
     },
     expectedResults: [{
       filename: defaultOptions.configFileName,
-      rules: [getConfigFunction(defaultOptions.configFactoryFunc)({ ENV_VAR: "env-var-value", API_ENDPOINT: "https://api.github.com" })]
+      rules: [getConfigFunction(defaultOptions.configFactoryFunc)({
+        ENV_VAR: "env-var-value",
+        API_ENDPOINT: "https://api.github.com",
+        FEATURE_FLAG: false,
+        NUMBER: 123
+      } as { [key: string]: any })]
     }, {
       filename: "index.html",
-      rules: [defaultOptions.windowKeyName, "ENV_VAR", "env-var-value", "API_ENDPOINT", "https://api.github.com"]
+      rules: [
+        defaultOptions.windowKeyName,
+        "ENV_VAR",
+        "env-var-value",
+        "API_ENDPOINT",
+        "https://api.github.com",
+        "FEATURE_FLAG",
+        "NUMBER"
+      ]
     }, {
       filename: "index.html.template",
-      rules: [defaultOptions.windowKeyName, toPlaceholder("ENV_VAR"), toPlaceholder("API_ENDPOINT")]
+      rules: [
+        defaultOptions.windowKeyName,
+        toPlaceholder("ENV_VAR"),
+        toPlaceholder("API_ENDPOINT"),
+        toPlaceholder("FEATURE_FLAG"),
+        toPlaceholder("NUMBER")
+      ]
     }]
   }))
 
